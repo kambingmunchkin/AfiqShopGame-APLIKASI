@@ -1,0 +1,374 @@
+<!--
+TopUpGame_PaketHemat.html
+Modern single-file demo: "Top Up Game - Paket Hemat"
+How to use:
+1. Save this file as TopUpGame_PaketHemat.html
+2. Open it in any modern browser (Chrome, Firefox, Edge).
+3. Customize package data inside the <script> section (packages array).
+4. To connect a real payment gateway, replace the "simulatePayment" function with your gateway's client-side integration.
+
+Features:
+- Responsive modern layout (mobile-first)
+- Paket hemat grid with dynamic prices and discounts
+- Quick order modal and checkout form with validation
+- Coupon code support, localStorage order history, and printable invoice
+- Accessibility-friendly markup and keyboard support
+
+Note: This is a demo. Do not use it as-is for production payments.
+-->
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top Up Game — Paket Hemat</title>
+  <meta name="description" content="Website Top Up Game modern — Paket hemat, checkout cepat, & promo" />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#06b6d4; --accent-2:#7c3aed;
+      --glass: rgba(255,255,255,0.04);
+      --success:#10b981; --danger:#ef4444;
+      --radius:12px; --maxw:1100px;
+      --ff: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:var(--ff);background:linear-gradient(180deg,#071021 0%, var(--bg) 100%);color:#e6eef8;display:flex;align-items:flex-start;justify-content:center;padding:36px}
+    .container{width:100%;max-width:var(--maxw)}
+
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:700}
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    .hero{display:flex;gap:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:14px;margin-bottom:20px;align-items:center}
+    .hero-left{flex:1}
+    .kicker{display:inline-block;background:var(--glass);padding:6px 10px;border-radius:999px;color:var(--muted);font-size:12px;margin-bottom:8px}
+    .hero h2{margin:0 0 6px 0}
+    .hero p{margin:0;color:var(--muted)}
+    .cta{margin-top:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;padding:10px 14px;border-radius:10px;color:#052025;font-weight:600;cursor:pointer}
+
+    .hero-right{width:250px}
+    .card{background:var(--card);padding:14px;border-radius:14px}
+
+    /* packages */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.hero{flex-direction:column}.grid{grid-template-columns:1fr}.hero-right{width:100%}.header-actions{display:none}}
+
+    .pkg{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .pkg h3{margin:0 0 6px 0}
+    .price{font-size:20px;color:var(--accent);font-weight:700}
+    .muted{color:var(--muted);font-size:13px}
+    .features{margin:8px 0 0 0;padding-left:18px;color:var(--muted)}
+    .pkg .buy{margin-top:12px}
+
+    footer{margin-top:22px;color:var(--muted);font-size:13px;text-align:center}
+
+    .container{max-width:1200px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#05202a}
+    .site-name{font-size:18px;font-weight:700}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a:hover{color:var(--accent)}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{background:linear-gradient(180deg, #071226, #081627);padding:18px;border-radius:12px;width:100%;max-width:520px;border:1px solid rgba(255,255,255,0.04)}
+    .form-row{display:flex;gap:8px;margin-bottom:10px}
+    .form-row input, .form-row select, .form-row textarea{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+    .small{font-size:12px;color:var(--muted)}
+
+    .order-summary{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-top:12px}
+    .row{display:flex;justify-content:space-between}
+
+    .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.03);font-size:13px}
+
+    /* invoice */
+    .invoice{background:#021026;padding:12px;border-radius:8px;margin-top:12px;font-size:13px}
+
+    /* tiny utilities */
+    .text-center{text-align:center}
+    .muted-block{color:var(--muted)}
+    .flex{display:flex;gap:10px;align-items:center}
+    .spacer{flex:1}
+
+    /* animations */
+    .fade-in{animation:fade .28s ease both}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    /* focus */
+    input:focus, select:focus, button:focus{outline:3px solid rgba(6,182,212,0.12)}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <header>
+      <div class="brand">
+        <div class="logo">AS</div>
+        <div>
+            <div class="site-name">AfiqShop<span style="color:var(--accent);"> Topup</span></div>
+          <p>Cepat • Aman • Terpercaya</p>
+        </div>
+
+        <div class="container">
+        <nav>
+            <a href="index.html">Beranda</a>
+            <a href="paket.html">Paket</a>
+            <a href="depo.html">Deposit</a>
+            <a href="#">Bantuan</a>
+          </nav>
+        </div>
+      <div class="header-actions">
+        <button class="btn" id="view-orders">Riwayat Order</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-left">
+        <span class="kicker">Promo Terbatas</span>
+        <h2>Top Up Cepat & Paket Hemat</h2>
+        <p>Dapatkan diamond, UC, atau voucher top up game favoritmu. Pembayaran mudah, proses cepat, dan dukungan 24/7.</p>
+        <div class="cta">
+          <button class="btn" id="jump-to-packages">Pilih Paket Hemat</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="card">
+          <p class="muted">Metode Pembayaran</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <span class="chip">GoPay</span>
+            <span class="chip">OVO</span>
+            <span class="chip">Bank</span>
+            <span class="chip">Pulsa</span>
+          </div>
+          <div style="margin-top:12px" class="muted small">Estimasi proses: <strong>1-5 menit</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="packages">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h3 style="margin:0">Paket Hemat</h3>
+        <div class="muted small">Pilih paket dan lanjutkan ke checkout</div>
+      </div>
+
+      <div class="grid" id="pkg-grid" aria-live="polite"></div>
+    </section>
+
+    <footer>
+      © TopUpGame • Demo • Tidak untuk transaksi nyata
+    </footer>
+
+    <!-- Modal -->
+    <div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal fade-in" role="document" aria-labelledby="modalTitle">
+        <h3 id="modalTitle">Checkout Paket</h3>
+        <div id="selected-info" class="muted small"></div>
+
+        <form id="checkout-form" onsubmit="return false;">
+          <div style="margin-top:8px">
+            <label for="playerId">ID Pemain / Username</label>
+            <input id="playerId" name="playerId" placeholder="Masukkan ID atau username" required />
+          </div>
+          <div class="form-row" style="margin-top:8px">
+            <div style="flex:1">
+              <label for="method">Metode Bayar</label>
+              <select id="method">
+                <option value="gopay">GoPay</option>
+                <option value="ovo">OVO</option>
+                <option value="bank">Bank Transfer</option>
+                <option value="pulsa">Pulsa</option>
+              </select>
+            </div>
+            <div style="width:120px">
+              <label for="qty">Qty</label>
+              <input id="qty" type="number" min="1" value="1" />
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label for="coupon">Kode Promo (opsional)</label>
+            <input id="coupon" placeholder="contoh: HEMAT10" />
+            <div id="coupon-message" class="small muted"></div>
+          </div>
+
+          <div class="order-summary" id="summary">
+            <div class="row"><div class="small muted">Subtotal</div><div id="subtotal">Rp0</div></div>
+            <div class="row"><div class="small muted">Diskon</div><div id="discount">Rp0</div></div>
+            <div class="row"><div class="small muted">Biaya Admin</div><div id="fee">Rp0</div></div>
+            <div class="row" style="margin-top:8px;font-weight:700"><div>Total</div><div id="total">Rp0</div></div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn" id="pay-now">Bayar Sekarang</button>
+            <button type="button" id="cancel" style="background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;color:var(--muted)">Batal</button>
+          </div>
+        </form>
+
+        <div id="payment-result" style="display:none;margin-top:12px"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ====== Demo package data (edit as needed) ======
+    const packages = [
+      {id: 'pkg1', title: 'Paket Hemat Bronze', desc: 'Diamond x100 + Bonus 20%', price: 10000, currency:'Rp', badge:'Best Seller'},
+      {id: 'pkg2', title: 'Paket Hemat Silver', desc: 'Diamond x250 + Bonus 60%', price: 24000, currency:'Rp', badge:'Hemat 20% (Bundle)'},
+      {id: 'pkg3', title: 'Paket Hemat Gold', desc: 'Diamond x600 + Bonus 200%', price: 55000, currency:'Rp', badge:'Paling Hemat'},
+      {id: 'pkg4', title: 'Voucher UC 50', desc: 'Voucher UC untuk game X', price: 30000, currency:'Rp'},
+      {id: 'pkg5', title: 'Top Up Pulsa (Isi game)', desc: 'Top up via pulsa otomatis', price: 50000, currency:'Rp'}
+    ];
+
+    const pkgGrid = document.getElementById('pkg-grid');
+    const modal = document.getElementById('modal');
+    const selectedInfo = document.getElementById('selected-info');
+    const subtotalEl = document.getElementById('subtotal');
+    const discountEl = document.getElementById('discount');
+    const feeEl = document.getElementById('fee');
+    const totalEl = document.getElementById('total');
+    const couponInput = document.getElementById('coupon');
+    const couponMsg = document.getElementById('coupon-message');
+    const qtyInput = document.getElementById('qty');
+
+    let selectedPkg = null;
+    let appliedCoupon = null;
+
+    function formatMoney(n){
+      return n.toLocaleString('id-ID');
+    }
+
+    function renderPackages(){
+      pkgGrid.innerHTML = '';
+      packages.forEach(p=>{
+        const el = document.createElement('article');
+        el.className = 'pkg fade-in';
+        el.innerHTML = `
+          <h3>${escapeHtml(p.title)}</h3>
+          <div class="muted">${escapeHtml(p.desc)}</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+            <div>
+              <div class="price">${p.currency} ${formatMoney(p.price)}</div>
+              ${p.badge? `<div class="muted small">${p.badge}</div>`: ''}
+            </div>
+            <div class="flex">
+              <button class="btn" onclick="openCheckout('${p.id}')">Beli</button>
+            </div>
+          </div>
+        `;
+        pkgGrid.appendChild(el);
+      });
+    }
+
+    function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" })[c]); }
+
+    function openCheckout(id){
+      selectedPkg = packages.find(x=>x.id===id);
+      if(!selectedPkg) return alert('Paket tidak ditemukan');
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+      selectedInfo.textContent = `${selectedPkg.title} — ${selectedPkg.desc}`;
+      qtyInput.value = 1;
+      appliedCoupon = null; couponInput.value=''; couponMsg.textContent='';
+      recalc();
+      // focus first field
+      setTimeout(()=>document.getElementById('playerId').focus(),200);
+    }
+
+    document.getElementById('cancel').addEventListener('click', closeModal);
+    document.getElementById('jump-to-packages').addEventListener('click', ()=>{document.getElementById('packages').scrollIntoView({behavior:'smooth'})});
+    document.getElementById('view-orders').addEventListener('click', showOrders);
+
+    function closeModal(){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); }
+
+    function recalc(){
+      const qty = Math.max(1, Number(qtyInput.value)||1);
+      const price = (selectedPkg?selectedPkg.price:0);
+      const subtotal = price*qty;
+      let discount = 0;
+      if(appliedCoupon === 'HEMAT10') discount = Math.round(subtotal*0.10);
+      const fee = Math.round(subtotal*0.02)+2000; // admin fee
+      const total = Math.max(0, subtotal - discount + fee);
+      subtotalEl.textContent = `${formatMoney(subtotal)}`;
+      discountEl.textContent = discount? formatMoney(discount) : '-';
+      feeEl.textContent = formatMoney(fee);
+      totalEl.textContent = formatMoney(total);
+      return {subtotal, discount, fee, total};
+    }
+
+    couponInput.addEventListener('input', ()=>{ appliedCoupon=null; couponMsg.textContent=''; });
+
+    document.getElementById('pay-now').addEventListener('click', ()=>{
+      // validate
+      const playerId = document.getElementById('playerId').value.trim();
+      if(!playerId){ alert('Masukkan ID pemain / username'); document.getElementById('playerId').focus(); return; }
+      // check coupon
+      const code = couponInput.value.trim().toUpperCase();
+      if(code){
+        if(code==='HEMAT10') appliedCoupon='HEMAT10', couponMsg.textContent='Kode HEMAT10 diterapkan (diskon 10%)';
+        else { couponMsg.textContent='Kode tidak valid'; appliedCoupon=null; }
+      }
+      const order = recalc();
+      simulatePayment(order).then(res=>{
+        document.getElementById('payment-result').style.display='block';
+        document.getElementById('payment-result').innerHTML = `<div class="invoice">\n  <div class=\"row\"><strong>Order ID:</strong><span>${res.orderId}</span></div>\n  <div class=\"row\"><div>${selectedPkg.title} (x${qtyInput.value})</div><div>${selectedPkg.currency} ${formatMoney(order.total)}</div></div>\n  <div style=\"margin-top:8px\">Terima kasih! Permintaan top up Anda sedang diproses.</div>\n  <div style=\"margin-top:8px;display:flex;gap:8px\">\n    <button onclick=\"printInvoice('${res.orderId}')\" class=\"btn\">Cetak Invoice</button>\n    <button onclick=\"saveOrder('${res.orderId}')\" style=\"background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;color:var(--muted)\">Simpan Riwayat</button>\n  </div>\n</div>`;
+        // auto-close after 6s
+        setTimeout(()=>closeModal(),6000);
+      }).catch(err=>{ alert('Pembayaran gagal: '+err); });
+    });
+
+    function simulatePayment(order){
+      // This simulates contacting a payment/API and returns a promise
+      return new Promise((resolve,reject)=>{
+        const loading = document.getElementById('payment-result');
+        loading.style.display='block'; loading.innerHTML='<div class="small muted">Memproses pembayaran...</div>';
+        setTimeout(()=>{
+          const success = true; // flip to false to test fail
+          if(success){
+            const data = {orderId: 'TG-'+Date.now(), total: order.total};
+            resolve(data);
+          } else reject('Terjadi kesalahan jaringan');
+        },1400);
+      });
+    }
+
+    function printInvoice(id){
+      const w = window.open('', '_blank');
+      w.document.write(`<pre style="font-family:monospace">Invoice ID: ${id}\nCheck your TopUpGame account for updates.</pre>`);
+      w.print();
+    }
+
+    function saveOrder(id){
+      const history = JSON.parse(localStorage.getItem('tg_orders')||'[]');
+      history.push({id, pkg:selectedPkg.title, total:totalEl.textContent, ts:Date.now()});
+      localStorage.setItem('tg_orders', JSON.stringify(history));
+      alert('Disimpan ke riwayat');
+    }
+
+    function showOrders(){
+      const history = JSON.parse(localStorage.getItem('tg_orders')||'[]');
+      if(!history.length) return alert('Belum ada riwayat order');
+      const list = history.map(h=>`- ${h.id} | ${h.pkg} | ${h.total}`).join('\n');
+      alert('Riwayat Order:\n'+list);
+    }
+
+    // recalc on qty change
+    qtyInput.addEventListener('input', recalc);
+
+    // init
+    renderPackages();
+
+    // accessibility: close modal with ESC
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+  </script>
+</body>
+</html>

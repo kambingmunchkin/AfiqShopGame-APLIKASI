@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AfiqShop Game — AfiqShop</title>
+  <meta name="description" content="Contoh halaman top up game modern — produk, paket diamond, metode pembayaran, keranjang, dan checkout ringan." />
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#98a0b3;
+      --accent:#6ee7b7;
+      --accent-2:#60a5fa;
+      --glass: rgba(255,255,255,0.04);
+      --radius:14px;
+      --glass-2: rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: linear-gradient(180deg, #071020 0%, #081327 40%, #071827 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
+    }
+
+    /* Layout */
+    .container{max-width:1200px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;color:#05202a}
+    .site-name{font-size:18px;font-weight:700}
+    nav{display:flex;gap:12px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px}
+    nav a:hover{color:var(--accent)}
+
+    /* Search & user */
+    .search{display:flex;gap:8px;align-items:center;background:var(--glass);border:1px solid var(--glass-border);padding:8px;border-radius:12px}
+    .search input{background:transparent;border:0;color:inherit;outline:none;width:220px}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:24px;margin-top:28px}
+    .card{background:linear-gradient(180deg,var(--card),#071427);border-radius:var(--radius);padding:20px;border:1px solid var(--glass-border);box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    .hero-left h1{margin:0;font-size:28px}
+    .hero-left p{color:var(--muted);margin-top:8px}
+    .featured{display:flex;gap:12px;margin-top:18px}
+    .badge{background:linear-gradient(90deg,var(--accent-2),var(--accent));padding:8px 12px;border-radius:999px;color:#05202a;font-weight:700}
+
+    /* Products */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+    .product{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid var(--glass-border);display:flex;flex-direction:column;gap:12px}
+    .product .meta{display:flex;align-items:center;gap:12px}
+    .product .meta img{width:56px;height:56px;border-radius:10px;object-fit:cover}
+    .product h3{margin:0;font-size:16px}
+    .price{font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:#05202a;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;border:1px solid var(--glass-border);color:var(--muted);padding:8px 10px;border-radius:10px}
+
+    /* Sidebar cart */
+    .sidebar{position:relative}
+    .cart{display:flex;flex-direction:column;gap:12px}
+    .cart .item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:var(--glass-2);border:1px solid rgba(255,255,255,0.02)}
+    .cart .item img{width:48px;height:48px;border-radius:8px}
+    .cart .summary{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.03)}
+
+    /* Filters */
+    .filters{display:flex;gap:8px;margin-top:12px}
+    .chip{padding:8px 12px;border-radius:999px;border:1px solid var(--glass-border);background:transparent;color:var(--muted);cursor:pointer}
+    .chip.active{background:rgba(96,165,250,0.08);color:var(--accent-2);border-color:rgba(96,165,250,0.2)}
+
+    footer{margin-top:36px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:640px){
+      body{padding:16px}
+      .grid{grid-template-columns:1fr}
+      .search input{width:120px}
+      nav{display:none}
+    }
+
+    /* Tiny interactions */
+    .muted{color:var(--muted)}
+    .pill{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">AS</div>
+        <div>
+          <div class="site-name">AfiqShop<span style="color:var(--accent);"> Topup</span></div>
+          <div class="muted" style="font-size:12px">Cepat • Aman • Terpercaya</div>
+        </div>
+      </div>
+
+      <nav>
+        <a href="index.html">Beranda</a>
+        <a href="paket.html">Paket</a>
+        <a href="depo.html">Deposit</a>
+        <a href="#">Bantuan</a>
+      </nav>
+
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="search card">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden style="opacity:0.8"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle></svg>
+          <input id="q" placeholder="Cari game, paket, top up..." />
+          <button class="ghost" onclick="applySearch()">Cari</button>
+        </div>
+
+        <div class="pill">Saldo: <strong style="margin-left:6px">Rp 1.000.000.000</strong></div>
+      </div>
+    </header>
+
+    <main class="hero">
+      <section class="hero-left card">
+        <h1>Top Up Game favoritmu — cepat & aman</h1>
+        <p class="muted">Pilih paket diamond, voucher, atau item in-game dari berbagai judul populer. Pembayaran via e-wallet, pulsa, dan transfer bank.</p>
+
+        <div class="featured">
+          <div class="badge">Promo Harian</div>
+          <div class="badge" style="background:linear-gradient(90deg,#ffd166,#ff6b6b)">Diskon Sampai 30%</div>
+        </div>
+
+        <div class="filters">
+          <div class="chip active" onclick="filter('all')">Semua</div>
+          <div class="chip" onclick="filter('mobile')">Mobile</div>
+          <div class="chip" onclick="filter('pc')">PC</div>
+          <div class="chip" onclick="filter('voucher')">Voucher</div>
+        </div>
+
+        <div class="grid" id="productGrid">
+          <!-- Produk di-inject lewat JS -->
+        </div>
+
+      </section>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h3 style="margin:0">Keranjang</h3>
+          <div class="muted" style="font-size:13px">Items akan muncul di sini ketika ditambahkan</div>
+
+          <div class="cart" id="cartList" style="margin-top:12px"></div>
+
+          <div class="summary">
+            <div style="display:flex;justify-content:space-between"><div class="muted">Sub total</div><div id="subtotal">Rp 0</div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px"><div class="muted">Biaya layanan</div><div id="fee">Rp 2.000</div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:12px;font-weight:700"><div>Total</div><div id="total">Rp 2.000</div></div>
+            <button class="btn" style="width:100%;margin-top:12px" onclick="checkout()">Checkout</button>
+            <button class="ghost" style="width:100%;margin-top:8px" onclick="clearCart()">Kosongkan</button>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+        <div class="card">
+          <h4 style="margin:0">Metode Pembayaran</h4>
+          <div class="muted" style="font-size:13px;margin-top:8px">Pilih metode yang Anda suka</div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <div class="chip">GoPay</div>
+            <div class="chip">OVO</div>
+            <div class="chip">Dana</div>
+            <div class="chip">Bank</div>
+            <div class="chip">Pulsa</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      © 2025 TopUp Game • Dibuat oleh AfiqShop
+    </footer>
+  </div>
+
+  <script>
+    const products = [
+      {id:1,title:'PUBG Mobile — 60 UC',price:12000,tag:'mobile',img:'download.jpeg'},
+      {id:2,title:'Mobile Legends — 86 Diamonds',price:25000,tag:'mobile',img:'b/unnamed.png'},
+      {id:3,title:'Free Fire — 210 Diamonds',price:50000,tag:'mobile',img:'b/ff.jpeg'},
+      {id:4,title:'Steam Wallet 50k',price:50000,tag:'pc',img:'b/wallet.jpeg'},
+      {id:5,title:'Valorant Points 1000',price:100000,tag:'pc',img:'b/valoran.jpeg'},
+      {id:6,title:'Voucher Google Play 50k',price:50000,tag:'voucher',img:'b/play.jpeg'}
+    ];
+
+    const cart = [];
+
+    function formatRupiah(v){
+      return 'Rp ' + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function renderProducts(list){
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML='';
+      list.forEach(p=>{
+        const el = document.createElement('div'); el.className='product';
+        el.innerHTML = `
+          <div class="meta">
+            <img src="${p.img}" alt="${p.title}" />
+            <div style="flex:1">
+              <h3>${p.title}</h3>
+              <div class="muted" style="font-size:13px">Kategori: ${p.tag.toUpperCase()}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="price">${formatRupiah(p.price)}</div>
+              <div class="muted" style="font-size:12px">Instan</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+            <button class="ghost" onclick="quickBuy(${p.id})">Beli Sekarang</button>
+            <button class="btn" onclick="addToCart(${p.id})">Tambah ke Keranjang</button>
+          </div>
+        `;
+        grid.appendChild(el);
+      })
+    }
+
+    function addToCart(id){
+      const p = products.find(x=>x.id===id);
+      const found = cart.find(c=>c.id===id);
+      if(found){ found.qty++; }
+      else cart.push({...p, qty:1});
+      renderCart();
+    }
+
+    function quickBuy(id){
+      addToCart(id);
+      checkout();
+    }
+
+    function renderCart(){
+      const list = document.getElementById('cartList');
+      list.innerHTML='';
+      let subtotal = 0;
+      cart.forEach(item=>{
+        subtotal += item.price * item.qty;
+        const node = document.createElement('div'); node.className='item';
+        node.innerHTML = `
+          <img src="${item.img}" alt="${item.title}" />
+          <div style="flex:1">
+            <div style="font-size:13px">${item.title}</div>
+            <div class="muted" style="font-size:12px">${item.qty} x ${formatRupiah(item.price)}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700">${formatRupiah(item.price*item.qty)}</div>
+            <div style="display:flex;gap:6px;margin-top:8px;justify-content:flex-end">
+              <button class="ghost" onclick="decrease(${item.id})">-</button>
+              <button class="ghost" onclick="increase(${item.id})">+</button>
+              <button class="ghost" onclick="removeItem(${item.id})">Hapus</button>
+            </div>
+          </div>
+        `;
+        list.appendChild(node);
+      })
+      document.getElementById('subtotal').innerText = formatRupiah(subtotal);
+      const fee = subtotal > 0 ? 2000 : 0;
+      document.getElementById('fee').innerText = formatRupiah(fee);
+      document.getElementById('total').innerText = formatRupiah(subtotal + fee);
+    }
+
+    function increase(id){ const it = cart.find(x=>x.id===id); if(it){ it.qty++; renderCart(); } }
+    function decrease(id){ const it = cart.find(x=>x.id===id); if(it){ it.qty = Math.max(1,it.qty-1); renderCart(); } }
+    function removeItem(id){ const idx = cart.findIndex(x=>x.id===id); if(idx>-1){ cart.splice(idx,1); renderCart(); } }
+    function clearCart(){ cart.splice(0); renderCart(); }
+
+    function checkout(){
+      if(cart.length===0){ alert('Keranjang kosong — tambahkan paket dulu.'); return; }
+      const total = document.getElementById('total').innerText;
+      // Simulasi checkout ringan
+      const names = cart.map(c=>`${c.qty} x ${c.title}`).join('\n');
+      const r = confirm(`Checkout:\n${names}\n\nTotal: ${total}\n\nLanjutkan ke pembayaran?`);
+      if(r){
+        alert('Terima kasih! Pembayaran sedang diproses, sabar bosku😘.');
+        clearCart();
+      }
+    }
+
+    function filter(tag){
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      const chips = Array.from(document.querySelectorAll('.chip'));
+      const active = chips.find(x=>x.textContent.toLowerCase()===tag || (tag==='all' && x.textContent.toLowerCase()==='semua'));
+      if(active) active.classList.add('active');
+
+      if(tag==='all') renderProducts(products);
+      else renderProducts(products.filter(p=>p.tag===tag));
+    }
+
+    function applySearch(){
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      if(!q) return renderProducts(products);
+      renderProducts(products.filter(p=>p.title.toLowerCase().includes(q)));
+    }
+
+    // Init
+    renderProducts(products);
+    renderCart();
+  </script>
+</body>
+</html>
